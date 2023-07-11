@@ -7,6 +7,8 @@ import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import Button from "./Buttons";
 import { useIsFocused } from "@react-navigation/native";
+import * as ImageManipulator from 'expo-image-manipulator';
+
 
 /*
   스택 네이게이션으로 지정된 컴포넌트는, 여러가지 요소(props)가 주어지는데,
@@ -30,6 +32,19 @@ export default function MedicRegister({ navigation }: any) {
     })();
   }, []);
 
+  //uri 이미지 png로 변환
+  const convertUriToPng = async (uri) => {
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ format: 'png' }],
+      { compress: 1, format: ImageManipulator.SaveFormat.PNG }
+    );
+  
+    // 변환된 이미지의 URI를 반환합니다.
+    return manipResult.uri;
+  };
+
+  //사진 촬영
   const takePicture = async () => {
     if (cameraRef) {
       try {
@@ -37,6 +52,20 @@ export default function MedicRegister({ navigation }: any) {
         console.log(data);
         setImage(data.uri);
       } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+
+  //사진 OCR
+  const uploadMedic = async () =>{
+    if(image){
+      try{
+        const convertedUri=await convertUriToPng(image);//png로 변환한 이미지
+
+        //여기부터 아래로 이미지에 대한 OCR을 진행 코드 작성
+
+      }catch(e){
         console.log(e);
       }
     }
@@ -84,7 +113,11 @@ export default function MedicRegister({ navigation }: any) {
                 icon="retweet"
                 onPress={() => setImage(null)}
               />
-              <Button title={"Save"} icon="check" />
+              <Button 
+                title={"Save"} 
+                icon="check"
+                onPress={uploadMedic}
+              />
             </View>
           ) : (
             <Button
