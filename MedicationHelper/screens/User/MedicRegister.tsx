@@ -39,6 +39,7 @@ export default function MedicRegister({ navigation }: any) {
         const data = await cameraRef.current.takePictureAsync();
         console.log(data);
 
+        //tmep.jpg로 촬영한 사진 파일명을 교체
         const newFileName = "temp.jpg";
         const newPath = FileSystem.documentDirectory + newFileName;
         await FileSystem.moveAsync({
@@ -47,6 +48,7 @@ export default function MedicRegister({ navigation }: any) {
         });
         console.log("Image saved as JPEG at " + newPath);
 
+        //촬영한 이미지를 화면에 표시
         setImage(newPath);
       } catch (e) {
         console.log(e);
@@ -54,33 +56,11 @@ export default function MedicRegister({ navigation }: any) {
     }
   };
 
-  //사진을 임시로 저장하는 코드
-  const saveImageAsJpg = async (imageUri) => {
-    const manipResult = await ImageManipulator.manipulateAsync(imageUri, [], {
-      format: ImageManipulator.SaveFormat.JPEG,
-    });
-
-    const tempPath = FileSystem.cacheDirectory + "temp.jpg";
-    await FileSystem.moveAsync({
-      from: manipResult.uri,
-      to: tempPath,
-    });
-    console.log("Image saved as JPEG at " + tempPath);
-    return tempPath;
-  };
-
   //사진 OCR
   const uploadMedic = async () => {
-    if (image) {
-      try {
-        //const convertedUri=await convertUriToPng(image);//png로 변환한 이미지
-        const jpgPath = await saveImageAsJpg(image);
-
-        //여기부터 아래로 이미지에 대한 OCR을 진행 코드 작성
-      } catch (e) {
-        console.log(e);
-      }
-    }
+    //여기서 CLOVA OCR을 진행한다.
+    //형식은 jpg, 파일 이름은 temp.jpg
+    //경로는 file:///data/user/0/host.exp.exponent/files/ExperienceData/%2540anonymous%252FMedicationHelper-457dad48-dab3-4df1-936e-159aed198ca0/temp.jpg
   };
 
   const saveImage = async () => {
@@ -112,6 +92,7 @@ export default function MedicRegister({ navigation }: any) {
         )}
 
         <View>
+          {/*이미지를 가지고 있는 경우와 없는 경우를 구분하여 표시 */}
           {image ? (
             <View
               style={{
